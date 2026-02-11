@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Factories\NotificationFactory;
 use App\Models\Notification;
+use Illuminate\Database\Schema\IndexDefinition;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Mockery\Matcher\Not;
@@ -25,15 +27,21 @@ class NotificationController extends Controller
      */
     public function create()
     {
+
         return Inertia::render('notification/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, NotificationFactory $factory)
     {
-        //
+        $NotificationSender = $request->input('type');
+        $sender = $factory->make($NotificationSender);
+        $recipient = $request->input('recipient');
+        $message = $request->input('message');
+        $sender->send($recipient, $message);
+        return Inertia::render('notification/Index');
     }
 
     /**
